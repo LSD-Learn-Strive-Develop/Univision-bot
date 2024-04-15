@@ -114,9 +114,11 @@ async def get_result_command(msg: Message, command: CommandObject) -> None:
             'from': user['faculty'] if 'faculty' in user else 'Сотрудник',
             'voices': [], 
             'mail': user['mail'],
-            'kio': 'kio' if 'kio' in user else '', 
-            'squads': 'squads' if 'squads' in user else ''
         }
+        if 'kio' in user:
+            voice_obj['kio'] = True
+        if 'squads' in user:
+            voice_obj['squads'] = True
 
         for i in range(3):
             try:
@@ -132,7 +134,11 @@ async def get_result_command(msg: Message, command: CommandObject) -> None:
         if data['from'] not in voices_from_faculty:
             voices_from_faculty[data['from']] = {}
 
+        if data['from'] == 'Юриспруденция':
+            print(data['voices'])
         for voice in data['voices']:
+            if data['from'] == 'Юриспруденция' and voice == 'Журналистика':
+                print('ok')
             if voice != '':
                 if voice in voices_from_faculty[data['from']]:
                     voices_from_faculty[data['from']][voice] += 1
@@ -149,9 +155,20 @@ async def get_result_command(msg: Message, command: CommandObject) -> None:
         sorted_keys = sorted(voices_from_faculty[faculty].keys(), key=lambda k: voices_from_faculty[faculty][k], reverse=True)
         print(sorted_keys)
         scores = [10, 8, 6, 5, 4, 3, 2, 1]
+        i = 0
+        j = 0
+        while j < len(sorted_keys):
+            if j != 0 and voices_from_faculty[faculty][sorted_keys[j]] == voices_from_faculty[faculty][sorted_keys[j - 1]]:
+                voices_from_faculty_norm[faculty][sorted_keys[j]] = scores[i - 1]
+            else:
+                if i >= len(scores):
+                    break
+                voices_from_faculty_norm[faculty][sorted_keys[j]] = scores[i]
+                i += 1
+            j += 1
         
-        for i in range(min(8, len(voices_from_faculty[faculty]))):
-            voices_from_faculty_norm[faculty][sorted_keys[i]] = scores[i]
+        # for i in range(min(8, len(voices_from_faculty[faculty]))):
+        #     voices_from_faculty_norm[faculty][sorted_keys[i]] = scores[i]
     
     print(voices_from_faculty_norm)
 
@@ -169,18 +186,22 @@ async def get_result_command(msg: Message, command: CommandObject) -> None:
     for k in sorted_sum:
         print(k, voices_sum[k])
 
-    columns = ['chat_id', 'От кого', '1', '2', '3', 'mail', 'kio', 'squads']
+    columns = ['chat_id', 'От кого', '1', '2', '3', 'mail']
     export_data = []
     for data in all_data:
+        from_column = data['from']
+        if 'kio' in data:
+            from_column = 'КИО'
+        elif 'squads' in data:
+            from_column = 'Отряды'
+
         export_data.append([
             data['tg_id'],
-            data['from'],
+            from_column,
             data['voices'][0],
             data['voices'][1],
             data['voices'][2],
-            data['mail'],
-            data['kio'],
-            data['squads'],
+            data['mail']
         ])
     
     export_data.append([])
