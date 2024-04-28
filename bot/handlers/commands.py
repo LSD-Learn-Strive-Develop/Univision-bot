@@ -97,6 +97,21 @@ async def event_stop_command(msg: Message, command: CommandObject) -> None:
     await msg.answer('Голосование остановлено')
 
 
+@commands_router.message(Command('replace_name'))
+async def event_stop_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+
+    last_name, new_name = command.args.split('\n')
+
+    db.users.update_many(
+        {'faculty': last_name},
+        {'$set': {'faculty': new_name}}
+    )
+    await msg.answer('Имя заменено')
+
+
 @commands_router.message(Command('get_result'))
 async def get_result_command(msg: Message, command: CommandObject) -> None:
     if msg.from_user.id not in admins:
