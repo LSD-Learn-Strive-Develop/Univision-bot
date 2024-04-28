@@ -18,7 +18,8 @@ from bot.utils.i18n import create_translator_hub
 logging.basicConfig(
     level=logging.DEBUG,
     format='[%(asctime)s] #%(levelname)-8s %(filename)s:'
-           '%(lineno)d - %(name)s - %(message)s'
+           '%(lineno)d - %(name)s - %(message)s',
+    # filename="py_log.log", filemode="w"
 )
 
 logger = logging.getLogger(__name__)

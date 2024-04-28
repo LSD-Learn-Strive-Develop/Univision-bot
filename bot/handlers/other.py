@@ -73,8 +73,11 @@ async def registration_start(msg: Message, state: FSMContext, i18n: TranslatorRu
                     data['mail'] = text
                     db.users.insert_one(data)
             else:
-                db.users.update_one({'mail': text}, {'$set': data})
-            
+                if db.users.find_one({'mail': text}): 
+                    db.users.update_one({'mail': text}, {'$set': data})
+                else:
+                    await msg.answer(i18n.message.invalid_format()) 
+
             await dialog_manager.start(state=StartSG.start, mode=StartMode.RESET_STACK)
             await state.clear()
         else:
