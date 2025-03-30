@@ -6,7 +6,7 @@ button-end_voting = ☑️ End the vote
 message-hello =
     Hi!
 
-    You're here, which means the 2024 Univision has begun! The participants have already performed, and now the outcome of the contest depends on you.
+    You're here, which means the 2025 Univision has begun! The participants have already performed, and now the outcome of the contest depends on you.
 
     Rules:
     You can vote for several participants, but you will NOT have the opportunity to vote for your faculty!

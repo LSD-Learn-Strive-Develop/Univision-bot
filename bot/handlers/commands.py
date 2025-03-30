@@ -28,6 +28,10 @@ async def process_start_command(
 
 @commands_router.message(Command('show'))
 async def show_command(msg: Message) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+    
     faculties = db.faculties.find({})
     text = 'Факультуты:\n'
     for faculty in faculties:
@@ -38,6 +42,10 @@ async def show_command(msg: Message) -> None:
 
 @commands_router.message(Command('add'))
 async def add_faculty_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+    
     rows = command.args.split('\n')
     for i in range(len(rows)):
         db.faculties.insert_one({'faculty': rows[i], 'item': i})
@@ -47,6 +55,10 @@ async def add_faculty_command(msg: Message, command: CommandObject) -> None:
 
 @commands_router.message(Command('add_squads'))
 async def add_faculty_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+    
     rows = command.args.split('\n')
     for i in range(len(rows)):
         db.users.update_one({'mail': rows[i].lower()}, {'$set': {'squads': True}})
@@ -54,14 +66,34 @@ async def add_faculty_command(msg: Message, command: CommandObject) -> None:
     await msg.answer('Отряды добавлены')
 
 
+@commands_router.message(Command('del_squads'))
+async def del_squads_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+    
+    mail = command.args.split('\n')
+    for m in mail:
+        db.users.update_one({'mail': m}, {'$unset': {'squads': True}})
+    await msg.answer('Отряды удалены')
+
+
 @commands_router.message(Command('del'))
 async def del_faculty_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+    
     db.faculties.delete_one({'faculty': command.args})
     await msg.answer('Факультет удален')
 
 
 @commands_router.message(Command('del_all'))
 async def del_faculty_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+
     db.faculties.delete_many({})
     await msg.answer('Факультеты удалены')
 
@@ -110,6 +142,40 @@ async def event_stop_command(msg: Message, command: CommandObject) -> None:
         {'$set': {'faculty': new_name}}
     )
     await msg.answer('Имя заменено')
+
+
+@commands_router.message(Command('add_kio'))
+async def add_kio_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+
+    mail = command.args.split('\n')
+    for m in mail:
+        db.users.update_one({'mail': m}, {'$set': {'kio': True}})
+    await msg.answer('КИО добавлены')
+
+
+@commands_router.message(Command('del_kio'))
+async def del_kio_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+
+    mail = command.args.split('\n')
+    for m in mail:
+        db.users.update_one({'mail': m}, {'$unset': {'kio': True}})
+    await msg.answer('КИО удалены')
+
+
+@commands_router.message(Command('drop_users'))
+async def drop_users_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+
+    db.users.delete_many({})
+    await msg.answer('Пользователи удалены')
 
 
 @commands_router.message(Command('get_result'))
@@ -232,6 +298,10 @@ async def get_result_command(msg: Message, command: CommandObject) -> None:
 
 @commands_router.message(Command('check_user'))
 async def check_user_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+
     mail = command.args
 
     user = db.users.find_one({'mail': mail})
@@ -242,20 +312,28 @@ async def check_user_command(msg: Message, command: CommandObject) -> None:
         await msg.answer('Такого пользователя нет в базе')
 
 
-@commands_router.message(Command('del_user'))
-async def del_user_command(msg: Message, command: CommandObject) -> None:
-    mail = command.args
+@commands_router.message(Command('del_user_data'))
+async def del_user_data_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
 
-    db.users.delete_one({'mail': mail})
-    # db.users.insert_one({'chat_id': msg.from_user.id, 'st_main': mail})
-
-    await msg.answer('Удалён')
-
-
-@commands_router.message(Command('del_user_all'))
-async def del_user_all_command(msg: Message, command: CommandObject) -> None:
     mail = command.args
 
     db.users.delete_one({'mail': mail})
 
     await msg.answer('Удалён')
+
+
+@commands_router.message(Command('del_user_vote'))
+async def del_user_vote_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+        
+    mail = command.args
+
+    for i in range(3):
+        db.users.update_one({'mail': mail}, {'$unset': {'event_1.' + str(i): True}})
+
+    await msg.answer('Голоса удалены')

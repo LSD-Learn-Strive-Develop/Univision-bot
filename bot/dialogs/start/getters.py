@@ -23,10 +23,12 @@ async def get_faculties(
             continue
         # if 'faculty' in user and user['faculty'] == 'Медицина' and (faculty['faculty'] == 'Медицина' or faculty['faculty'] == 'Стоматология'):
         #     continue
-        # if 'kio' in user and user['kio'] and faculty['faculty'] == 'КИО':
-        #     continue
-        # if 'squads' in user and user['squads'] and faculty['faculty'] == 'Студенческие отряды':
-        #     continue
+        if 'kio' in user and user['kio'] and faculty['faculty'] == 'КИО':
+            continue
+        if user['faculty'] == 'КФКиСЭТ' and (faculty['faculty'] == 'КФКиСЭТ' or faculty['faculty'] == 'Физическая культура'):
+            continue
+        if 'squads' in user and user['squads'] and faculty['faculty'] == 'Студенческие отряды':
+            continue
         faculties.append((faculty['faculty'], faculty['item']))
 
     return {'message_text': i18n.message.selection_faculties(),

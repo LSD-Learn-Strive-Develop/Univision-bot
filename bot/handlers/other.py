@@ -36,15 +36,19 @@ async def get_mails(msg: Message, state: FSMContext, i18n: TranslatorRunner):
     sheet_obj = wb_obj.active
 
     for i in range(2, sheet_obj.max_row + 1):
-        faculty = sheet_obj.cell(row = i, column = 1).value
-        mail = sheet_obj.cell(row = i, column = 2).value
-        country = sheet_obj.cell(row = i, column = 4).value
+        try:
+            faculty = sheet_obj.cell(row = i, column = 1).value
+            mail = sheet_obj.cell(row = i, column = 2).value
+            mail = mail[:8]
+            country = sheet_obj.cell(row = i, column = 4).value
 
-        data = {'faculty': faculty, 'mail': mail}
-        if country != 'Россия':
-            data['kio'] = True
+            data = {'faculty': faculty, 'mail': mail}
+            if country != 'Россия':
+                data['kio'] = True
 
-        db.users.insert_one(data)
+            db.users.insert_one(data)
+        except Exception as e:
+            print(e)
 
     await msg.answer('Загружено')
 
