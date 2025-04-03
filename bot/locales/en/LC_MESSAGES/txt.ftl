@@ -30,6 +30,8 @@ message-voting_successfully = Thank you for voting
 
 message-invalid_format = The format is incorrect. Enter your single account login in the stXXXXXX format
 
+message-not_mail = The mail was not found. Enter your unified account login in the stXXXXXX format
+
 message-limit = Only 3 faculties can be selected
 
 message-already_voted = You have already voted!

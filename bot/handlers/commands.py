@@ -333,7 +333,46 @@ async def del_user_vote_command(msg: Message, command: CommandObject) -> None:
         
     mail = command.args
 
-    for i in range(3):
-        db.users.update_one({'mail': mail}, {'$unset': {'event_1.' + str(i): True}})
+    # Получаем все поля пользователя
+    user = db.users.find_one({'mail': mail})
+    if user:
+        # Создаем объект для удаления всех полей, начинающихся с event_
+        unset_fields = {}
+        for field in user.keys():
+            if field.startswith('event_'):
+                unset_fields[field] = True
+        
+        if unset_fields:
+            db.users.update_one({'mail': mail}, {'$unset': unset_fields})
+            await msg.answer('Все поля голосования удалены')
+        else:
+            await msg.answer('У пользователя нет полей голосования')
+    else:
+        await msg.answer('Пользователь не найден')
 
-    await msg.answer('Голоса удалены')
+
+@commands_router.message(Command('del_all_votes'))
+async def del_all_votes_command(msg: Message) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+
+    # Получаем всех пользователей
+    users = db.users.find({})
+    
+    # Собираем все уникальные поля, начинающиеся с event_
+    event_fields = set()
+    for user in users:
+        for field in user.keys():
+            if field.startswith('event_'):
+                event_fields.add(field)
+    
+    if event_fields:
+        # Создаем объект для удаления всех полей
+        unset_fields = {field: True for field in event_fields}
+        
+        # Удаляем поля у всех пользователей
+        result = db.users.update_many({}, {'$unset': unset_fields})
+        await msg.answer(f'Удалено {result.modified_count} полей голосования у всех пользователей')
+    else:
+        await msg.answer('Поля голосования не найдены у пользователей')

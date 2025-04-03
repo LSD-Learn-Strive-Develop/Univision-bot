@@ -32,6 +32,8 @@ message-voting_successfully = Спасибо, что проголосовали
 
 message-invalid_format = Формат неверный. Введите свой логин единой учётной записи в формате stXXXXXX
 
+message-not_mail = Почта не найдена. Введите свой логин единой учётной записи в формате stXXXXXX
+
 message-limit = Можно выбрать только 3 факультета
 
 message-already_voted = Вы уже голосовали!

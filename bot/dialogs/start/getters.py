@@ -17,6 +17,13 @@ async def get_faculties(
     **kwargs,
 ) -> dict[str, str]:
     user = db.users.find_one({'tg_id': event_from_user.id})
+    if not user:
+        print(f'not user {event_from_user.id}')
+        
+        return {'message_text': i18n.message.not_mail(),
+                'end_voting': i18n.button.end_voting(),
+                'faculties': []}
+    
     faculties = []
     for faculty in db.faculties.find():
         if 'faculty' in user and user['faculty'] == faculty['faculty']:
@@ -25,7 +32,7 @@ async def get_faculties(
         #     continue
         if 'kio' in user and user['kio'] and faculty['faculty'] == 'КИО':
             continue
-        if user['faculty'] == 'КФКиСЭТ' and (faculty['faculty'] == 'КФКиСЭТ' or faculty['faculty'] == 'Физическая культура'):
+        if 'faculty' in user and user['faculty'] == 'КФКиСЭТ' and (faculty['faculty'] == 'КФКиСЭТ' or faculty['faculty'] == 'Физическая культура'):
             continue
         if 'squads' in user and user['squads'] and faculty['faculty'] == 'Студенческие отряды':
             continue
