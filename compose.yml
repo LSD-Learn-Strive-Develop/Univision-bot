@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   bot:
     build: .
@@ -14,7 +12,7 @@ services:
       - ./bot:/app/bot  # Для удобства разработки
 
   mongodb:
-    image: mongo:latest
+    image: mirror.gcr.io/mongo:6.0
     ports:
       - "27018:27017"  # Внешний порт 27018 маппится на внутренний 27017
     volumes:
