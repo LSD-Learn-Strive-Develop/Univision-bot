@@ -376,3 +376,40 @@ async def del_all_votes_command(msg: Message) -> None:
         await msg.answer(f'Удалено {result.modified_count} полей голосования у всех пользователей')
     else:
         await msg.answer('Поля голосования не найдены у пользователей')
+
+
+@commands_router.message(Command('add_user'))
+async def add_user_command(msg: Message, command: CommandObject) -> None:
+    if msg.from_user.id not in admins:
+        await msg.answer(text_not_permissions)
+        return
+    
+    if not command.args:
+        await msg.answer('Пожалуйста, укажите данные в формате:\nфакультет\nпочта')
+        return
+
+    try:
+        faculty, mail = command.args.split('\n')
+        
+        # Создаем нового пользователя
+        new_user = {
+            'faculty': faculty.strip(),
+            'mail': mail.strip()
+        }
+        
+        # Проверяем, существует ли уже пользователь с такой почтой
+        existing_user = db.users.find_one({'mail': mail.strip()})
+        if existing_user:
+            await msg.answer('Пользователь с такой почтой уже существует')
+            return
+        
+        # Добавляем пользователя в базу данных
+        result = db.users.insert_one(new_user)
+        
+        if result.inserted_id:
+            await msg.answer('Пользователь успешно добавлен')
+        else:
+            await msg.answer('Ошибка при добавлении пользователя')
+            
+    except ValueError:
+        await msg.answer('Неверный формат данных. Используйте формат:\nфакультет\nпочта')
