@@ -41,6 +41,7 @@ TOKEN=1956423829:AAGv7cB5DqxQFVHz2Sz
 MONGO_DB_NAME=univision
 MONGO_HOST=localhost
 MONGO_PORT=27017
+MONGODB_URI=mongodb://localhost:27018/univision_bot
 ```
 
 1. Что на сервере запущена mongodb

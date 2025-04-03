@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/univision_bot
+      - TOKEN=${TOKEN}  # Берем значение из .env файла
+    restart: always
+    volumes:
+      - ./bot:/app/bot  # Для удобства разработки
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27018:27017"  # Внешний порт 27018 маппится на внутренний 27017
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mongodb_data:
+    name: univision_bot_mongodb_data 
