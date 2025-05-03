@@ -5,7 +5,7 @@ services:
       mongodb:
         condition: service_healthy
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/univision_bot
+      - MONGODB_URI=mongodb://mongodb:27017/univision
       - TOKEN=${TOKEN}  # Берем значение из .env файла
     restart: always
     volumes:

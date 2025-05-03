@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 config_settings = Settings()
-admins = [248603604, 705098458, 660094929, 294062257, 6432481914]
+admins = [248603604, 705098458, 660094929, 294062257, 6432481914, 1017417718]
 
 # Используем URI из переменной окружения или конфига
 mongodb_uri = os.getenv('MONGODB_URI', config_settings.MONGODB_URI)
